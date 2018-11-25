@@ -1,0 +1,44 @@
+---
+title: "Case Study Two"
+author: "Julius Horvath, Michael Barker, Adam Scheerer"
+date: "November 25, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Question 1 
+
+We will delete the Question 1 title above. Here are the questions we need to knock out. Remember this is not supposed to look like a student project so we will delete many of these things as they are completed.
+
+a.	The client wants this to be reproducible and know exactly what you did.  There needs to be an informative Readme, complete with several sections, as referenced in Live Session.  Give contact information, session Info, and the objective of the repo at least.  
+b.	You have a large data set, and it needs its own Codebook, formatted in an approachable way.  Make sure you describe peculiarities of the data by variable and what needs transforming.  However, do not make it too long either.
+c.	Create a file structure that is accessible and transparent.  Document it in the root directory, ideally in the Readme.
+
+```{r 1A, echo=TRUE}
+sessionInfo()
+
+```
+
+
+```{r 2A, echo=TRUE}
+data<-read.csv(file="CaseStudy2data.csv", header=TRUE)
+print('The number of rows and columns in the data set are:')
+nrow(data)
+ncol(data)
+```
+
+```{r 2B, echo=TRUE}
+data<-read.csv(file="CaseStudy2data.csv", header=TRUE)
+names(data)
+```
+
+```{r 3, echo=TRUE}
+
+```
+
+```{r 4, echo=TRUE}
+
+```
