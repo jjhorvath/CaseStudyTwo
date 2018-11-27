@@ -33,12 +33,41 @@ ncol(data)
 ```{r 2B, echo=TRUE}
 data<-read.csv(file="CaseStudy2data.csv", header=TRUE)
 names(data)
+newnames<-read.csv("NewParameterNames.csv")
+names(data)<-newnames$NewTerm
+```
+```{r 2D, echo=TRUE}
+sapply(data, class) #this shows what class they are
 ```
 
-```{r 3, echo=TRUE}
+
+```{r 3A, echo=TRUE}
+min(data$Age) #checking to see if any under 18. Since there are not, no need to remove at this point. 
+```
+```{r 3B, echo=TRUE}
+summary(data$JobSat)   #lets make these histograms look better and supply commentary on them.
+hist(data$JobSat)
+
+summary(data$YrsAtComp)
+hist(data$YrsAtComp)
+```
+
+```{r 3C, echo=TRUE}
+summary(data$Gender)
+summary(data$Education)
+summary(data$JobRole)
+```
+
+```{r 4B, echo=TRUE}
 
 ```
 
-```{r 4, echo=TRUE}
+```{r 4C, echo=TRUE}
+plot(data$Age, log(data$MthlyInc)) #log transform helps clarify the plots. There appears to be a relationship between age and monthly income, however age is really just a proxy for things like experience or time at a company/in the workforce. plotting those you get a much stronger relationship. 
+plot(data$TotWrkYrs, log(data$MthlyInc))
+plot(data$YrsAtComp, log(data$MthlyInc))
+```
+
+```{r 4D, echo=TRUE}
 
 ```
