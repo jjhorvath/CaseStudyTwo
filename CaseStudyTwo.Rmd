@@ -58,16 +58,40 @@ summary(data$Education)
 summary(data$JobRole)
 ```
 
+
+```{r 3D, echo=TRUE}
+
+
+```
+
 ```{r 4B, echo=TRUE}
+
+Age.vs.Log.Mthly.Inc <- lm((log(data$MthlyInc))~data$Age)
+plot(data$Age,log(data$MthlyInc),xlab='Age',ylab='Log (Monthly Income) ',main='Age vs Log(Monthly Income)')
+abline(Age.vs.Log.Mthly.Inc,col='red')
+
+scatterplot(log(data$MthlyInc)~data$Age | data$Gender,data=data,regLine=T,
+            xlab='Age',ylab='Log(Montly Income)',main='Age vs Log(Monthly Income)')
+
 
 ```
 
 ```{r 4C, echo=TRUE}
-plot(data$Age, log(data$MthlyInc)) #log transform helps clarify the plots. There appears to be a relationship between age and monthly income, however age is really just a proxy for things like experience or time at a company/in the workforce. plotting those you get a much stronger relationship. 
+Age.vs.Log.Mthly.Inc <- lm((log(data$MthlyInc))~data$Age)
+
+plot(data$Age, log(data$MthlyInc))
+abline(Age.vs.Log.Mthly.Inc,col='red')#log transform helps clarify the plots. There appears to be a relationship between age and monthly income, however age is really just a proxy for things like experience or time at a company/in the workforce. plotting those you get a much stronger relationship. 
 plot(data$TotWrkYrs, log(data$MthlyInc))
 plot(data$YrsAtComp, log(data$MthlyInc))
+
+scatterplot(log(data$MthlyInc)~data$Age | data$Gender,data=data,regLine=T,
+            xlab='Age',ylab='Log(Montly Income)',main='Age vs Log(Monthly Income)')
 ```
 
 ```{r 4D, echo=TRUE}
+data$LifeSat <- data$JobSat+data$EnviroSat+data$RelationshipSat
 
+plot(data$LifeSat)
+scatterplot(data$LifeSat~data$MthlyInc,data=data,regLine=T,
+            xlab='Life Satisfaction',ylab='Monthly Income', main='Life Satisfaction vs Monthly Income')
 ```
