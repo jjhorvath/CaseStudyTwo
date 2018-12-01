@@ -65,6 +65,8 @@ table(data$JobRole) #counts of each job role
 
 
 ```{r 3D, echo=TRUE}
+table(data$JobRole)[4]  #This displays the number of managers in our dataset.
+
 
 ```
 
