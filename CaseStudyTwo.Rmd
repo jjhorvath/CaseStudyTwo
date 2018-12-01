@@ -54,13 +54,17 @@ hist(data$YrsAtComp)
 
 ```{r 3C, echo=TRUE}
 summary(data$Gender)
+table(data$Gender) #Counts of each gender.
+
 summary(data$Education)
+table(data$Education)#Counts of Education Level
+
 summary(data$JobRole)
+table(data$JobRole) #counts of each job role
 ```
 
 
 ```{r 3D, echo=TRUE}
-
 
 ```
 
