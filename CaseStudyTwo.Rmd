@@ -71,6 +71,8 @@ table(data$JobRole)[4]  #This displays the number of managers in our dataset.
 ```
 
 ```{r 4B, echo=TRUE}
+install.packages('car')
+library(car)
 
 Age.vs.Log.Mthly.Inc <- lm((log(data$MthlyInc))~data$Age)
 plot(data$Age,log(data$MthlyInc),xlab='Age',ylab='Log (Monthly Income) ',main='Age vs Log(Monthly Income)')
@@ -95,7 +97,9 @@ scatterplot(log(data$MthlyInc)~data$Age | data$Gender,data=data,regLine=T,
 ```
 
 ```{r 4D, echo=TRUE}
-data$LifeSat <- data$JobSat+data$EnviroSat+data$RelationshipSat
+data$LifeSat <- data$JobSat
+data$LifeSat<- data$LifeSat +data$EnviroSat
+data$LifeSat <- data$LifeSat+data$RelationSat
 
 plot(data$LifeSat)
 scatterplot(data$LifeSat~data$MthlyInc,data=data,regLine=T,
