@@ -48,8 +48,24 @@ min(data$Age) #checking to see if any under 18. Since there are not, no need to 
 summary(data$JobSat)   #lets make these histograms look better and supply commentary on them.
 hist(data$JobSat)
 
-summary(data$YrsAtComp)
+summary(data$YrsAtComp)   #How many years the employee was at the company.
 hist(data$YrsAtComp)
+
+summary(data$Education)   #Education level of the employee. Each number indicates how many years of college they have completed.
+hist(data$Education)
+
+summary(data$YearsInCurrentRole)    #How many years employee has been in their current role. 
+hist(data$YearsInCurrentRole)
+
+summary(data$JobRole)    #Job role or title at the company.
+hist(data$JobRole)
+
+summary(data$HourlyRate)   #The hourly rate of pay for the employee
+hist(data$HourlyRate)
+
+summary(data$MonthlyRate)   #The monthly rate of pay (to display monthly income in comparison to hourly pay to show if the employee is less than or more than full time if hourly)
+hist(data$MonthlyRate)
+
 ```
 
 ```{r 3C, echo=TRUE}
