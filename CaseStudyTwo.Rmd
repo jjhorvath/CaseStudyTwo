@@ -19,7 +19,6 @@ c.	Create a file structure that is accessible and transparent.  Document it in t
 
 ```{r 1A, echo=TRUE}
 sessionInfo()
-
 ```
 
 
@@ -47,34 +46,30 @@ min(data$Age) #checking to see if any under 18. Since there are not, no need to 
 ```{r 3B, echo=TRUE}
 summary(data$JobSat)   #lets make these histograms look better and supply commentary on them.
 hist(data$JobSat)
-
 summary(data$YrsAtComp)   #How many years the employee was at the company.
 hist(data$YrsAtComp)
-
 summary(data$Education)   #Education level of the employee. Each number indicates how many years of college they have completed.
 hist(data$Education)
 
-summary(data$YearsInCurrentRole)    #How many years employee has been in their current role. 
-hist(data$YearsInCurrentRole)
-
-summary(data$JobRole)    #Job role or title at the company.
-hist(data$JobRole)
-
+summary(data$JobLevel)
+hist(data$JobLevel)
 summary(data$HourlyRate)   #The hourly rate of pay for the employee
 hist(data$HourlyRate)
-
 summary(data$MonthlyRate)   #The monthly rate of pay (to display monthly income in comparison to hourly pay to show if the employee is less than or more than full time if hourly)
 hist(data$MonthlyRate)
+data$LifeSat <- data$JobSat
+data$LifeSat<- data$LifeSat +data$EnviroSat
+data$LifeSat <- data$LifeSat+data$RelationSat
+hist(data$LifeSat)
+summary(data$LifeSat)  #Here is the Histogram of the metric we created for Life Satisfaction.  The Life Satisfaction score is simply the sum of Job Satisfaction, Environment Satisfaction, and Relationsip Satisfaction 
 
 ```
 
 ```{r 3C, echo=TRUE}
 summary(data$Gender)
 table(data$Gender) #Counts of each gender.
-
 summary(data$Education)
 table(data$Education)#Counts of Education Level
-
 summary(data$JobRole)
 table(data$JobRole) #counts of each job role
 ```
@@ -82,41 +77,39 @@ table(data$JobRole) #counts of each job role
 
 ```{r 3D, echo=TRUE}
 table(data$JobRole)[4]  #This displays the number of managers in our dataset.
-
-
 ```
 
 ```{r 4B, echo=TRUE}
-install.packages('car')
-library(car)
-
-Age.vs.Log.Mthly.Inc <- lm((log(data$MthlyInc))~data$Age)
-plot(data$Age,log(data$MthlyInc),xlab='Age',ylab='Log (Monthly Income) ',main='Age vs Log(Monthly Income)')
-abline(Age.vs.Log.Mthly.Inc,col='red')
-
-scatterplot(log(data$MthlyInc)~data$Age | data$Gender,data=data,regLine=T,
-            xlab='Age',ylab='Log(Montly Income)',main='Age vs Log(Monthly Income)')
-
 
 ```
 
 ```{r 4C, echo=TRUE}
+
+library(car)
 Age.vs.Log.Mthly.Inc <- lm((log(data$MthlyInc))~data$Age)
 
-plot(data$Age, log(data$MthlyInc))
+plot(data$Age,log(data$MthlyInc),ylab='Log(Monthly Income)',xlab='Age',
+     main='Log(Monthly Income) by Age')
 abline(Age.vs.Log.Mthly.Inc,col='red')#log transform helps clarify the plots. There appears to be a relationship between age and monthly income, however age is really just a proxy for things like experience or time at a company/in the workforce. plotting those you get a much stronger relationship. 
-plot(data$TotWrkYrs, log(data$MthlyInc))
-plot(data$YrsAtComp, log(data$MthlyInc))
+
+plot(data$TotWrkYrs, log(data$MthlyInc),ylab='Log(Monthly Income)',xlab='Years Worked',main='Log(Monthly Income) vs Years Worked')
+abline(lm((log(data$MthlyInc))~data$TotWrkYrs),col='blue')#You can see here that Years Worked has a similar trendline to Age.
+
+plot(data$YrsAtComp, log(data$MthlyInc),ylab='Log(Monthly Income)',xlab='Years at Company',main='Log(Monthly Income) vs Years at Company')
+abline(lm((log(data$MthlyInc))~data$YrsAtComp),col='green')#You can see again that Years at company and Years Worked are very similar in slope.
 
 scatterplot(log(data$MthlyInc)~data$Age | data$Gender,data=data,regLine=T,
-            xlab='Age',ylab='Log(Montly Income)',main='Age vs Log(Monthly Income)')
+            xlab='Age',ylab='Log(Montly Income)',main='Age vs Log(Monthly Income)',legend=F)
+legend(50, 7.5, legend=c('Male','Female'),col=c('blue','pink'),lty=1:1,box.col='black')
+
+#It does not appear that either gender has a significant difference in the correlation between Age and the change in Monthly Income.
+```
 ```
 
 ```{r 4D, echo=TRUE}
 data$LifeSat <- data$JobSat
 data$LifeSat<- data$LifeSat +data$EnviroSat
 data$LifeSat <- data$LifeSat+data$RelationSat
-
 plot(data$LifeSat)
 scatterplot(data$LifeSat~data$MthlyInc,data=data,regLine=T,
             xlab='Life Satisfaction',ylab='Monthly Income', main='Life Satisfaction vs Monthly Income')
