@@ -2,7 +2,9 @@
 title: "Case Study Two"
 author: "Julius Horvath, Michael Barker, Adam Scheerer"
 date: "November 25, 2018"
-output: html_document
+output:
+  html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -45,22 +47,24 @@ min(data$Age) #checking to see if any under 18. Since there are not, no need to 
 ```
 ```{r 3B, echo=TRUE}
 summary(data$JobSat)   #lets make these histograms look better and supply commentary on them.
-hist(data$JobSat)
+hist(data$JobSat,main='Histogram of Job Satisfaction',xlab='Job Satisfaction',col='green')
+
 summary(data$YrsAtComp)   #How many years the employee was at the company.
-hist(data$YrsAtComp)
+hist(data$YrsAtComp,main='Histogram of Years at the Company',xlab='Years at Company',col='red',xlim=c(0,40),prob=T)
 summary(data$Education)   #Education level of the employee. Each number indicates how many years of college they have completed.
-hist(data$Education)
+hist(data$Education,main='Histogram of Education',xlab='Years of College completed',col='blue',xlim=c(1,5))
 
 summary(data$JobLevel)
-hist(data$JobLevel)
+hist(data$JobLevel,main='Histogram of Joblevel',xlab='Job Level', col='yellow',xlim=c(1,5))
 summary(data$HourlyRate)   #The hourly rate of pay for the employee
-hist(data$HourlyRate)
+hist(data$HourlyRate,main='Histogram of Hourly Rates',xlab='Dollars per Hour',col='DarkGreen',ylim=c(0,150))
+
 summary(data$MonthlyRate)   #The monthly rate of pay (to display monthly income in comparison to hourly pay to show if the employee is less than or more than full time if hourly)
-hist(data$MonthlyRate)
+hist(data$MonthlyRate,main='Histogram of Monthly Rates',xlab='Dollars per Month', col='DarkBlue',xlim=c(2000,27000))
 data$LifeSat <- data$JobSat
 data$LifeSat<- data$LifeSat +data$EnviroSat
 data$LifeSat <- data$LifeSat+data$RelationSat
-hist(data$LifeSat)
+hist(data$LifeSat,main='Histogram of Life Satisfaction',xlab='Life Satisfaction Metric', col='Purple',xlim=c(3,12),probability = T)
 summary(data$LifeSat)  #Here is the Histogram of the metric we created for Life Satisfaction.  The Life Satisfaction score is simply the sum of Job Satisfaction, Environment Satisfaction, and Relationsip Satisfaction 
 
 ```
@@ -80,6 +84,21 @@ table(data$JobRole)[4]  #This displays the number of managers in our dataset.
 ```
 
 ```{r 4B, echo=TRUE}
+library(ggplot2)
+library(plyr)
+
+
+data.to.plot <-ddply(data,.(JobLevel),summarize,MthlyInc = mean(MthlyInc))
+data.to.plot$MthlyInc<- as.integer(data.to.plot$MthlyInc)
+data.to.plot$JobLevel<-as.character(data.to.plot$JobLevel)
+plot <- ggplot(data=data.to.plot,aes(x=JobLevel,y=MthlyInc))+
+  geom_bar(stat='identity',width=0.8,color='gold',fill='darkgreen')+
+  theme_minimal()+
+  coord_flip()+
+  geom_text(aes(label=MthlyInc),color='white',hjust=1)+
+  theme_minimal()+
+  labs(title='Mean Monthly Income by Job Level',y='Mean Monthly Income',x='Job Level',caption='Compiled for DDSAnalytics')
+plot
 
 ```
 
@@ -104,13 +123,12 @@ legend(50, 7.5, legend=c('Male','Female'),col=c('blue','pink'),lty=1:1,box.col='
 
 #It does not appear that either gender has a significant difference in the correlation between Age and the change in Monthly Income.
 ```
-```
 
 ```{r 4D, echo=TRUE}
 data$LifeSat <- data$JobSat
 data$LifeSat<- data$LifeSat +data$EnviroSat
 data$LifeSat <- data$LifeSat+data$RelationSat
 plot(data$LifeSat)
-scatterplot(data$LifeSat~data$MthlyInc,data=data,regLine=T,
+scatterplot(log(data$MthlyInc)~data$LifeSat,data=data,regLine=T,
             xlab='Life Satisfaction',ylab='Monthly Income', main='Life Satisfaction vs Monthly Income')
 ```
