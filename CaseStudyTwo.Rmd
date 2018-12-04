@@ -36,6 +36,35 @@ data<-read.csv(file="CaseStudy2data.csv", header=TRUE)
 names(data)
 newnames<-read.csv("NewParameterNames.csv")
 names(data)<-newnames$NewTerm
+data$EmployeeCnt<- NULL
+data$EmployeeNum<-NULL
+data$StndHrs<-NULL
+data$Over18<-NULL
+data$Attrition<-as.character(data$Attrition)
+data$Attrition[data$Attrition=='Yes']<-1
+data$Attrition[data$Attrition=='No']<-0
+data$Attrition<- as.factor(data$Attrition)
+data$JobRole<-as.character(data$JobRole)
+data$JobRole[data$JobRole=='Human Resources']<-'HumanResources'
+data$JobRole[data$JobRole=='Laboratory Technician']<- 'LabTech'
+data$JobRole[data$JobRole=='Manager']<-'Manager'
+data$JobRole[data$JobRole=='Manufacturing Director']<-'ManufacturingDirector'
+data$JobRole[data$JobRole=='Research Director']<- 'ResearchDirector'
+data$JobRole[data$JobRole=='Research Scientist ']<- 'ResearchScientist'
+data$JobRole[data$JobRole=='Sales Executive']<-'SalesExecutive'
+data$JobRole[data$JobRole=='Sales Representative']<- 'SalesRep'
+data$OverTime<-as.character(data$OverTime)
+data$OverTime[data$OverTime=='Yes']<-1
+data$OverTime[data$OverTime=='No']<-0
+data$MaritalStat <- as.character(data$MaritalStat)
+data$MaritalStat[data$MaritalStat=='Married']<-1
+data$MaritalStat[data$MaritalStat=='Single']<-0
+data$MaritalStat[data$MaritalStat=='Divorced']<-2
+data$Attrition<-as.integer(data$Attrition)
+data$LifeSat <- data$JobSat
+data$LifeSat<- data$LifeSat +data$EnviroSat
+data$LifeSat <- data$LifeSat+data$RelationSat
+
 ```
 ```{r 2D, echo=TRUE}
 sapply(data, class) #this shows what class they are
@@ -133,32 +162,7 @@ library(MASS)
 library(tidyverse)
 library(caret)
 library(leaps)
-data$EmployeeCnt<- NULL
-data$EmployeeNum<-NULL
-data$StndHrs<-NULL
-data$Over18<-NULL
-data$Attrition<-as.character(data$Attrition)
-data$Attrition[data$Attrition=='Yes']<-1
-data$Attrition[data$Attrition=='No']<-0
-data$Attrition<- as.factor(data$Attrition)
-data$JobRole<-as.character(data$JobRole)
-data$JobRole[data$JobRole=='Human Resources']<-'HumanResources'
-data$JobRole[data$JobRole=='Laboratory Technician']<- 'LabTech'
-data$JobRole[data$JobRole=='Manager']<-'Manager'
-data$JobRole[data$JobRole=='Manufacturing Director']<-'ManufacturingDirector'
-data$JobRole[data$JobRole=='Research Director']<- 'ResearchDirector'
-data$JobRole[data$JobRole=='Research Scientist ']<- 'ResearchScientist'
-data$JobRole[data$JobRole=='Sales Executive']<-'SalesExecutive'
-data$JobRole[data$JobRole=='Sales Representative']<- 'SalesRep'
-data$OverTime<-as.character(data$OverTime)
-data$OverTime[data$OverTime=='Yes']<-1
-data$OverTime[data$OverTime=='No']<-0
-data$MaritalStat <- as.character(data$MaritalStat)
-data$MaritalStat[data$MaritalStat=='Married']<-1
-data$MaritalStat[data$MaritalStat=='Single']<-0
-data$MaritalStat[data$MaritalStat=='Divorced']<-2
 
-data$Attrition<-as.integer(data$Attrition)
 head(data)
 full.model <- lm(data$Attrition~.,data=data)
 step.model <- stepAIC(full.model,direction = 'both')
@@ -171,14 +175,14 @@ three.variable.model <- lm(Attrition~LifeSat+TotWrkYrs+OverTime,data=data)
 summary(three.variable.model)  #Here is the summary of our 3 variables that contribute most to attrition, all very statistically significant
 set.seed(123)
 train.control<-trainControl(method='cv',number=10)
-step.model<- train(Attrition~.,data=data,method='leapBackward',
+step.model<- train(Attrition~.,data=data,method='leapSeq',
                    tuneGrid=data.frame(nvmax=1:5),
                    trControl=train.control)
 step.model$results
-step.model$bestTune
+step.model$bestTune  #This tells us that our best model for predicting attrition has 4 variables.
 summary(step.model$finalModel)
 
-best.tune.model <-lm(Attrition~Age+data$OverTime+data$MaritalStat,data=data)
+best.tune.model <-lm(Attrition~data$OverTime+data$StkOptLevel+data$TotWrkYrs+LifeSat,data=data)
 summary(best.tune.model)#Here is our new model after using 10fold cross-validation to estimate prediction error
 ```
 
