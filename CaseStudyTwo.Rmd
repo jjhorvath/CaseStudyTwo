@@ -46,13 +46,16 @@ sapply(data, class) #this shows what class they are
 min(data$Age) #checking to see if any under 18. Since there are not, no need to remove at this point. 
 ```
 ```{r 3B, echo=TRUE}
+data$LifeSat <- data$JobSat
+data$LifeSat<- data$LifeSat +data$EnviroSat
+data$LifeSat <- data$LifeSat+data$RelationSat
 summary(data$JobSat)   #lets make these histograms look better and supply commentary on them.
-hist(data$JobSat,main='Histogram of Job Satisfaction',xlab='Job Satisfaction',col='green')
+hist(data$JobSat,main='Histogram of Job Satisfaction',xlab='Job Satisfaction',col='green',breaks=c(0,1,2,3,4),prob=T,ylim=c(0,0.35))
 
 summary(data$YrsAtComp)   #How many years the employee was at the company.
 hist(data$YrsAtComp,main='Histogram of Years at the Company',xlab='Years at Company',col='red',xlim=c(0,40),prob=T)
 summary(data$Education)   #Education level of the employee. Each number indicates how many years of college they have completed.
-hist(data$Education,main='Histogram of Education',xlab='Years of College completed',col='blue',xlim=c(1,5))
+hist(data$Education,main='Histogram of Education',xlab='Years of College completed',col='blue',xlim=c(1,5),breaks=c(0,1,2,3,4,5),prob=T)
 
 summary(data$JobLevel)
 hist(data$JobLevel,main='Histogram of Joblevel',xlab='Job Level', col='yellow',xlim=c(1,5))
@@ -124,10 +127,65 @@ legend(50, 7.5, legend=c('Male','Female'),col=c('blue','pink'),lty=1:1,box.col='
 #It does not appear that either gender has a significant difference in the correlation between Age and the change in Monthly Income.
 ```
 
+
+```{r}
+library(MASS)
+library(tidyverse)
+library(caret)
+library(leaps)
+data$EmployeeCnt<- NULL
+data$EmployeeNum<-NULL
+data$StndHrs<-NULL
+data$Over18<-NULL
+data$Attrition<-as.character(data$Attrition)
+data$Attrition[data$Attrition=='Yes']<-1
+data$Attrition[data$Attrition=='No']<-0
+data$Attrition<- as.factor(data$Attrition)
+data$JobRole<-as.character(data$JobRole)
+data$JobRole[data$JobRole=='Human Resources']<-'HumanResources'
+data$JobRole[data$JobRole=='Laboratory Technician']<- 'LabTech'
+data$JobRole[data$JobRole=='Manager']<-'Manager'
+data$JobRole[data$JobRole=='Manufacturing Director']<-'ManufacturingDirector'
+data$JobRole[data$JobRole=='Research Director']<- 'ResearchDirector'
+data$JobRole[data$JobRole=='Research Scientist ']<- 'ResearchScientist'
+data$JobRole[data$JobRole=='Sales Executive']<-'SalesExecutive'
+data$JobRole[data$JobRole=='Sales Representative']<- 'SalesRep'
+data$OverTime<-as.character(data$OverTime)
+data$OverTime[data$OverTime=='Yes']<-1
+data$OverTime[data$OverTime=='No']<-0
+data$MaritalStat <- as.character(data$MaritalStat)
+data$MaritalStat[data$MaritalStat=='Married']<-1
+data$MaritalStat[data$MaritalStat=='Single']<-0
+data$MaritalStat[data$MaritalStat=='Divorced']<-2
+
+data$Attrition<-as.integer(data$Attrition)
+head(data)
+full.model <- lm(data$Attrition~.,data=data)
+step.model <- stepAIC(full.model,direction = 'both')
+summary(step.model)
+
+models <- regsubsets(Attrition~.,data=data,nvmax=3,method='seqrep')
+summary(models)
+
+three.variable.model <- lm(Attrition~LifeSat+TotWrkYrs+OverTime,data=data)
+summary(three.variable.model)  #Here is the summary of our 3 variables that contribute most to attrition, all very statistically significant
+set.seed(123)
+train.control<-trainControl(method='cv',number=10)
+step.model<- train(Attrition~.,data=data,method='leapBackward',
+                   tuneGrid=data.frame(nvmax=1:5),
+                   trControl=train.control)
+step.model$results
+step.model$bestTune
+summary(step.model$finalModel)
+
+best.tune.model <-lm(Attrition~Age+data$OverTime+data$MaritalStat,data=data)
+summary(best.tune.model)#Here is our new model after using 10fold cross-validation to estimate prediction error
+```
+
+
+
+
 ```{r 4D, echo=TRUE}
-data$LifeSat <- data$JobSat
-data$LifeSat<- data$LifeSat +data$EnviroSat
-data$LifeSat <- data$LifeSat+data$RelationSat
 plot(data$LifeSat)
 scatterplot(log(data$MthlyInc)~data$LifeSat,data=data,regLine=T,
             xlab='Life Satisfaction',ylab='Monthly Income', main='Life Satisfaction vs Monthly Income')
