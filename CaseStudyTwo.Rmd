@@ -61,9 +61,7 @@ data$MaritalStat[data$MaritalStat=='Married']<-1
 data$MaritalStat[data$MaritalStat=='Single']<-0
 data$MaritalStat[data$MaritalStat=='Divorced']<-2
 data$Attrition<-as.integer(data$Attrition)
-data$LifeSat <- data$JobSat
-data$LifeSat<- data$LifeSat +data$EnviroSat
-data$LifeSat <- data$LifeSat+data$RelationSat
+
 
 ```
 ```{r 2D, echo=TRUE}
