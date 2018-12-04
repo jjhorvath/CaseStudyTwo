@@ -38,15 +38,15 @@ data<-read.csv(file="CaseStudy2data.csv", header=TRUE)
 names(data)
 newnames<-read.csv("NewParameterNames.csv")
 names(data)<-newnames$NewTerm
-data$EmployeeCnt<- NULL
+data$EmployeeCnt<- NULL#Here we are getting rid of columns that all have the same value
 data$EmployeeNum<-NULL
 data$StndHrs<-NULL
 data$Over18<-NULL
 data$Attrition<-as.character(data$Attrition)
-data$Attrition[data$Attrition=='Yes']<-1
+data$Attrition[data$Attrition=='Yes']<-1 #We are recoding Attrition; Yes as 1 and No as 0 so that regression equations will run
 data$Attrition[data$Attrition=='No']<-0
 data$JobRole<-as.character(data$JobRole)
-data$JobRole[data$JobRole=='Human Resources']<-'HumanResources'
+data$JobRole[data$JobRole=='Human Resources']<-'HumanResources'#Here we are eliminating spaces so that we can put this in graphs
 data$JobRole[data$JobRole=='Laboratory Technician']<- 'LabTech'
 data$JobRole[data$JobRole=='Manager']<-'Manager'
 data$JobRole[data$JobRole=='Manufacturing Director']<-'ManufacturingDirector'
@@ -55,10 +55,10 @@ data$JobRole[data$JobRole=='Research Scientist ']<- 'ResearchScientist'
 data$JobRole[data$JobRole=='Sales Executive']<-'SalesExecutive'
 data$JobRole[data$JobRole=='Sales Representative']<- 'SalesRep'
 data$OverTime<-as.character(data$OverTime)
-data$OverTime[data$OverTime=='Yes']<-1
+data$OverTime[data$OverTime=='Yes']<-1 #Recoding Overtime Yes and No to 1 and 0 respectively
 data$OverTime[data$OverTime=='No']<-0
 data$MaritalStat <- as.character(data$MaritalStat)
-data$MaritalStat[data$MaritalStat=='Married']<-1
+data$MaritalStat[data$MaritalStat=='Married']<-1#Recoding Single, Married, and Divorced to 0,1,2 respectively to put in equations.
 data$MaritalStat[data$MaritalStat=='Single']<-0
 data$MaritalStat[data$MaritalStat=='Divorced']<-2
 data$Attrition<-as.integer(data$Attrition)
