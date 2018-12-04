@@ -1,7 +1,7 @@
 ---
 title: "Case Study Two"
 author: "Julius Horvath, Michael Barker, Adam Scheerer"
-date: "November 25, 2018"
+date: "December 4, 2018"
 output:
   html_document: default
   pdf_document: default
@@ -31,6 +31,8 @@ nrow(data)
 ncol(data)
 ```
 
+
+## Cleaning the Data
 ```{r 2B, echo=TRUE}
 data<-read.csv(file="CaseStudy2data.csv", header=TRUE)
 names(data)
@@ -65,10 +67,12 @@ data$Attrition<-as.integer(data$Attrition)
 sapply(data, class) #this shows what class they are
 ```
 
-
+## Checking to make sure the ages of our datapoints are appropriate...
 ```{r 3A, echo=TRUE}
 min(data$Age) #checking to see if any under 18. Since there are not, no need to remove at this point. 
 ```
+#### The data is appropriate to use, now we can begin our Exploratory Data Analysis
+#### We have many histograms here for you to look at
 ```{r 3B, echo=TRUE}
 data$LifeSat <- data$JobSat
 data$LifeSat<- data$LifeSat +data$EnviroSat
@@ -91,7 +95,7 @@ data$LifeSat <- data$LifeSat+data$RelationSat
 hist(data$LifeSat,main='Histogram of Life Satisfaction',xlab='Life Satisfaction Metric', col='Purple',xlim=c(3,12),probability = T)
 summary(data$LifeSat)  #Here is the Histogram of the metric we created for Life Satisfaction.  The Life Satisfaction score is simply the sum of Job Satisfaction, Environment Satisfaction, and Relationsip Satisfaction 
 ```
-
+## Counts of relevant categories of data
 ```{r 3C, echo=TRUE}
 summary(data$Gender)
 table(data$Gender) #Counts of each gender.
@@ -105,7 +109,7 @@ table(data$JobRole) #counts of each job role
 ```{r 3D, echo=TRUE}
 table(data$JobRole)[4]  #This displays the number of managers in our dataset.
 ```
-
+##Here are our barcharts that seperate a few relevant pieces of data by groups such as Job level and Job Role
 ```{r 4B, echo=TRUE}
 library(ggplot2)
 library(plyr)
@@ -167,7 +171,7 @@ count(Job.role.worst$Attrition,vars=1) #2.5% attrition for the least satisfied j
 
 ```
 
-
+##Searching for a relationship between age and Income, followed by checking for differences amongst Gender
 ```{r 4C, echo=TRUE}
 library(car)
 Age.vs.Log.Mthly.Inc <- lm((log(data$MthlyInc))~data$Age)
@@ -183,17 +187,10 @@ scatterplot(log(data$MthlyInc)~data$Age | data$Gender,data=data,regLine=T,
 legend(50, 7.5, legend=c('Male','Female'),col=c('blue','pink'),lty=1:1,box.col='black')
 #It does not appear that either gender has a significant difference in the correlation between Age and the change in Monthly Income.
 
-
-
-
-
-
-
-
 ```
 
 
-
+#Model Building time!!
 ```{r}
 library(MASS)
 library(tidyverse)
@@ -218,8 +215,13 @@ summary(step.model$finalModel)
 best.tune.model <-lm(Attrition~data$OverTime+data$StkOptLevel+data$TotWrkYrs+LifeSat,data=data)
 summary(best.tune.model)#Here is our new model after using 10fold cross-validation to estimate prediction error
 ```
+### We have given our two best models, the best 3 variable model is 
+##### Attrition = 0.462-0.032*LifeSat-0.008*TotWrkYrs+0.214*OverTimeYes
 
+### the best model however has 4 variables and is 
+##### Attrition = 0.513 + 0.214*OverTimeYes -0.06*StkOptLevel - 0.008*TotWrkYrs -0.0334*LifeSat
 
+#####All of the coefficients have significant t-values, their absolute values are all greater than 5 which you can see in our summary report.  These large t-statistics lead to very small probabilities that we would see this relationship between variables by chance.
 
 
 ```{r 4D, echo=TRUE}
@@ -228,3 +230,5 @@ scatterplot(log(data$MthlyInc)~log(data$LifeSat),data=data,regLine=T,
             xlab='log(Life Satisfaction)',ylab='log(Monthly Income)', main='Life Satisfaction vs Monthly Income')
 #there does not appear to be a clear relationship between Life Satisfaction and Monthly Income 
 
+```
+##We cannot see a relationship between Life Satisfaction and Monthly Income, this relationship may be hidden within the groups of job roles and job levels and not life satisfaction.
