@@ -43,7 +43,6 @@ data$Over18<-NULL
 data$Attrition<-as.character(data$Attrition)
 data$Attrition[data$Attrition=='Yes']<-1
 data$Attrition[data$Attrition=='No']<-0
-data$Attrition<- as.factor(data$Attrition)
 data$JobRole<-as.character(data$JobRole)
 data$JobRole[data$JobRole=='Human Resources']<-'HumanResources'
 data$JobRole[data$JobRole=='Laboratory Technician']<- 'LabTech'
@@ -61,8 +60,6 @@ data$MaritalStat[data$MaritalStat=='Married']<-1
 data$MaritalStat[data$MaritalStat=='Single']<-0
 data$MaritalStat[data$MaritalStat=='Divorced']<-2
 data$Attrition<-as.integer(data$Attrition)
-
-
 ```
 ```{r 2D, echo=TRUE}
 sapply(data, class) #this shows what class they are
@@ -78,17 +75,14 @@ data$LifeSat<- data$LifeSat +data$EnviroSat
 data$LifeSat <- data$LifeSat+data$RelationSat
 summary(data$JobSat)   #lets make these histograms look better and supply commentary on them.
 hist(data$JobSat,main='Histogram of Job Satisfaction',xlab='Job Satisfaction',col='green',breaks=c(0,1,2,3,4),prob=T,ylim=c(0,0.35))
-
 summary(data$YrsAtComp)   #How many years the employee was at the company.
 hist(data$YrsAtComp,main='Histogram of Years at the Company',xlab='Years at Company',col='red',xlim=c(0,40),prob=T)
 summary(data$Education)   #Education level of the employee. Each number indicates how many years of college they have completed.
 hist(data$Education,main='Histogram of Education',xlab='Years of College completed',col='blue',xlim=c(1,5),breaks=c(0,1,2,3,4,5),prob=T)
-
 summary(data$JobLevel)
 hist(data$JobLevel,main='Histogram of Joblevel',xlab='Job Level', col='yellow',xlim=c(1,5))
 summary(data$HourlyRate)   #The hourly rate of pay for the employee
 hist(data$HourlyRate,main='Histogram of Hourly Rates',xlab='Dollars per Hour',col='DarkGreen',ylim=c(0,150))
-
 summary(data$MonthlyRate)   #The monthly rate of pay (to display monthly income in comparison to hourly pay to show if the employee is less than or more than full time if hourly)
 hist(data$MonthlyRate,main='Histogram of Monthly Rates',xlab='Dollars per Month', col='DarkBlue',xlim=c(2000,27000))
 data$LifeSat <- data$JobSat
@@ -96,7 +90,6 @@ data$LifeSat<- data$LifeSat +data$EnviroSat
 data$LifeSat <- data$LifeSat+data$RelationSat
 hist(data$LifeSat,main='Histogram of Life Satisfaction',xlab='Life Satisfaction Metric', col='Purple',xlim=c(3,12),probability = T)
 summary(data$LifeSat)  #Here is the Histogram of the metric we created for Life Satisfaction.  The Life Satisfaction score is simply the sum of Job Satisfaction, Environment Satisfaction, and Relationsip Satisfaction 
-
 ```
 
 ```{r 3C, echo=TRUE}
@@ -116,43 +109,89 @@ table(data$JobRole)[4]  #This displays the number of managers in our dataset.
 ```{r 4B, echo=TRUE}
 library(ggplot2)
 library(plyr)
-
-
 data.to.plot <-ddply(data,.(JobLevel),summarize,MthlyInc = mean(MthlyInc))
 data.to.plot$MthlyInc<- as.integer(data.to.plot$MthlyInc)
 data.to.plot$JobLevel<-as.character(data.to.plot$JobLevel)
-plot <- ggplot(data=data.to.plot,aes(x=JobLevel,y=MthlyInc))+
+Income.by.joblevel <- ggplot(data=data.to.plot,aes(x=JobLevel,y=MthlyInc))+
   geom_bar(stat='identity',width=0.8,color='gold',fill='darkgreen')+
   theme_minimal()+
   coord_flip()+
   geom_text(aes(label=MthlyInc),color='white',hjust=1)+
   theme_minimal()+
-  labs(title='Mean Monthly Income by Job Level',y='Mean Monthly Income',x='Job Level',caption='Compiled for DDSAnalytics')
-plot
+  labs(title='Mean Monthly Income by Job Level',y='Mean Monthly Income',x='Job Level',caption='With data from DDSAnalytics')
+Income.by.joblevel
+
+Mean.tot.wrk.yrs.by.joblevel <- ddply(data,.(JobLevel),summarize,TotWrkYrs=mean(TotWrkYrs))
+Mean.tot.wrk.yrs.by.joblevel$JobLevel<-as.character(Mean.tot.wrk.yrs.by.joblevel$JobLevel)
+Mean.tot.wrk.yrs.by.joblevel$TotWrkYrs<- as.integer(Mean.tot.wrk.yrs.by.joblevel$TotWrkYrs)
+Wrk.yrs.joblevel.plot <-ggplot(data=Mean.tot.wrk.yrs.by.joblevel,aes(x=JobLevel,y=TotWrkYrs))+
+  geom_bar(stat='identity', width=0.8,color='red',fill='darkblue')+
+  theme_minimal()+
+  coord_flip()+
+  geom_text(aes(label=TotWrkYrs),color='white',hjust=2)+
+  theme_minimal()+
+  labs(title='Mean Total Work Years by Job Level',y='Mean Total Work Hours',x='Job Level',caption='With data from DDSAnalytics')
+summary(Wrk.yrs.joblevel.plot)
+Wrk.yrs.joblevel.plot#This builds on the scatterplot in the next chunk that has log(Monthly Inc) plotted against Age and Years Worked.  The higher the job level correlates with more years worked and in turn high Monthly wages.
+job.level.5 <- subset(data,JobLevel==5,select=c(JobLevel,Attrition))
+count(job.level.5$Attrition,vars=1)#Here we see an Attrition rate of 7% at Job Level 5
+
+job.level.3 <- subset(data,JobLevel==3,select=c(JobLevel,Attrition))
+count(job.level.3$Attrition,vars=1) #Attrition rate rises to 14.7% at Job Level 3
+
+job.level.1 <- subset(data,JobLevel==1,select=c(JobLevel,Attrition))
+count(job.level.1$Attrition,vars=1) #Again the Attrition rate continues to rise and is up to 26.3% at Job Level 1
+#We see in our final linear regression equation toward the end that each additional Work Year lowers the chance of attrition by 0.008 so all of this seems to add up.
+
+LifeSat.by.JobRole <- ddply(data,.(JobRole),summarize,LifeSat=mean(LifeSat))
+LifeSatPlot<- ggplot(data=LifeSat.by.JobRole,aes(x=reorder(JobRole,LifeSat),y=LifeSat))+
+  geom_bar(stat='identity',width=0.8,color='steelblue',fill='white')+
+  coord_flip()+
+  theme_minimal()+
+  geom_text(aes(label=LifeSat),color='black',hjust=2)+
+  theme_minimal()+
+  labs(title='Mean Life Satisfaction by Job Role',y='Mean Life Satisfaction',x='Job Role',caption='With data from DDSAnalytics')
+LifeSatPlot #We can see that the mean Life Satisfaction is actually pretty similar across Job Roles however.  Indicating that it may not be what you do, but how long you've done it that decides your life satisfaction.
+
+Job.role.best <- subset(data,JobRole=='ManufacturingDirector',select=c(JobRole,Attrition))
+count(Job.role.best$Attrition,vars=1) #6.9% attrition for the most satisfied job
+
+Job.role.worst <- subset(data, JobRole=='ResearchDirector',select=c(JobRole,Attrition))
+count(Job.role.worst$Attrition,vars=1) #2.5% attrition for the least satisfied job although there may be sample size issues with this.
+
+
+
+
+
+
 
 ```
 
-```{r 4C, echo=TRUE}
 
+```{r 4C, echo=TRUE}
 library(car)
 Age.vs.Log.Mthly.Inc <- lm((log(data$MthlyInc))~data$Age)
-
 plot(data$Age,log(data$MthlyInc),ylab='Log(Monthly Income)',xlab='Age',
      main='Log(Monthly Income) by Age')
 abline(Age.vs.Log.Mthly.Inc,col='red')#log transform helps clarify the plots. There appears to be a relationship between age and monthly income, however age is really just a proxy for things like experience or time at a company/in the workforce. plotting those you get a much stronger relationship. 
-
 plot(data$TotWrkYrs, log(data$MthlyInc),ylab='Log(Monthly Income)',xlab='Years Worked',main='Log(Monthly Income) vs Years Worked')
 abline(lm((log(data$MthlyInc))~data$TotWrkYrs),col='blue')#You can see here that Years Worked has a similar trendline to Age.
-
 plot(data$YrsAtComp, log(data$MthlyInc),ylab='Log(Monthly Income)',xlab='Years at Company',main='Log(Monthly Income) vs Years at Company')
 abline(lm((log(data$MthlyInc))~data$YrsAtComp),col='green')#You can see again that Years at company and Years Worked are very similar in slope.
-
 scatterplot(log(data$MthlyInc)~data$Age | data$Gender,data=data,regLine=T,
             xlab='Age',ylab='Log(Montly Income)',main='Age vs Log(Monthly Income)',legend=F)
 legend(50, 7.5, legend=c('Male','Female'),col=c('blue','pink'),lty=1:1,box.col='black')
-
 #It does not appear that either gender has a significant difference in the correlation between Age and the change in Monthly Income.
+
+
+
+
+
+
+
+
 ```
+
 
 
 ```{r}
@@ -160,15 +199,12 @@ library(MASS)
 library(tidyverse)
 library(caret)
 library(leaps)
-
 head(data)
 full.model <- lm(data$Attrition~.,data=data)
 step.model <- stepAIC(full.model,direction = 'both')
 summary(step.model)
-
 models <- regsubsets(Attrition~.,data=data,nvmax=3,method='seqrep')
 summary(models)
-
 three.variable.model <- lm(Attrition~LifeSat+TotWrkYrs+OverTime,data=data)
 summary(three.variable.model)  #Here is the summary of our 3 variables that contribute most to attrition, all very statistically significant
 set.seed(123)
@@ -179,7 +215,6 @@ step.model<- train(Attrition~.,data=data,method='leapSeq',
 step.model$results
 step.model$bestTune  #This tells us that our best model for predicting attrition has 4 variables.
 summary(step.model$finalModel)
-
 best.tune.model <-lm(Attrition~data$OverTime+data$StkOptLevel+data$TotWrkYrs+LifeSat,data=data)
 summary(best.tune.model)#Here is our new model after using 10fold cross-validation to estimate prediction error
 ```
@@ -189,6 +224,7 @@ summary(best.tune.model)#Here is our new model after using 10fold cross-validati
 
 ```{r 4D, echo=TRUE}
 plot(data$LifeSat)
-scatterplot(log(data$MthlyInc)~data$LifeSat,data=data,regLine=T,
-            xlab='Life Satisfaction',ylab='Monthly Income', main='Life Satisfaction vs Monthly Income')
-```
+scatterplot(log(data$MthlyInc)~log(data$LifeSat),data=data,regLine=T,
+            xlab='log(Life Satisfaction)',ylab='log(Monthly Income)', main='Life Satisfaction vs Monthly Income')
+#there does not appear to be a clear relationship between Life Satisfaction and Monthly Income 
+
