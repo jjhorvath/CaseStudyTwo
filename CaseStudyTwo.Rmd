@@ -16,7 +16,7 @@ knitr::opts_chunk$set(echo = TRUE)
 We will delete the Question 1 title above. Here are the questions we need to knock out. Remember this is not supposed to look like a student project so we will delete many of these things as they are completed.
 
 a.	The client wants this to be reproducible and know exactly what you did.  There needs to be an informative Readme, complete with several sections, as referenced in Live Session.  Give contact information, session Info, and the objective of the repo at least.  
-b.	You have a large data set, and it needs its own Codebook, formatted in an approachable way.  Make sure you describe peculiarities of the data by variable and what needs transforming.  However, do not make it too long either.
+
 c.	Create a file structure that is accessible and transparent.  Document it in the root directory, ideally in the Readme.
 
 ```{r 1A, echo=TRUE}
